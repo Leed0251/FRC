@@ -45,9 +45,6 @@ def get_expenses(var_fixed):
         "Price": price_list
     }
 
-    # Get user data
-    product_name = not_blank("Product name: ", "The product name cannot be blank")
-
     # loop to get component, quantity and price
     item_name = ""
     while item_name.lower() != "xxx":
