@@ -2,6 +2,7 @@
 import pandas
 import math
 import os
+from datetime import date
 
 # *** Functions go here ***
 
@@ -119,7 +120,7 @@ def get_expenses(var_fixed):
                 break
 
         if var_fixed == "variable":
-            quantity = num_check("Quantity:",
+            quantity = num_check("Quantity: ",
             "The amount must be a whole number larger than zero",
             int)
         else:
@@ -169,7 +170,7 @@ def profit_goal(total_costs):
     while True:
 
         # ask for a profit goal...
-        response = input("What is your profit goal (eg $500 or 50%) ")
+        response = not_blank("What is your profit goal (eg $500 or 50%) ", "Response can not be blank")
 
         # check if first character is $...
         if response[0] == "$":
@@ -232,6 +233,8 @@ def round_up(amount, roundto):
 
 # **** Main Routine goes here ****
 
+print("\n**** Welcome to the Great Fundraising Calculator ******\n")
+
 displayInstructions = yes_no("Do you want to read the instructions (y/n): ")
 
 if displayInstructions == "yes":
@@ -278,17 +281,18 @@ print(f"Selling Price (unrounded): ${selling_price:.2f}")
 recommended_price = currency(round_up(selling_price, round_to))
 
 # Change frames to strings
-variable_txt = pandas.DataFrame.to_string(variable_frame)
+variable_txt = pandas.DataFrame.to_string(fixed_frame)
 
 heading = f"**** {product_name} ****"
 
-to_write = [heading, variable_txt,
-currency(profit_target), recommended_price]
+to_write = ["==== Variable Costs ====", variable_txt, f"Fixed Costs Sub Total: {currency(variable_sub)}"]
 
 if have_fixed == "yes":
     fixed_txt = pandas.DataFrame.to_string(fixed_frame)
-    to_write = [heading, variable_txt, fixed_txt,
-    currency(profit_target), recommended_price]
+    to_write.extend(["==== Fixed Costs ====" , fixed_txt, f"Fixed Costs Sub Total: {currency(fixed_sub)}"])
+
+to_write.extend(["==== Profit Goal / Selling Price ====", f"Profit Goal: {currency(profit_target)}\nTotal Costs: {currency(all_costs)}",
+f"Minimum Price per Item: {currency(selling_price)}\nRecommended Price per Item: {recommended_price}"])
 
 
 # Write to file...
@@ -297,12 +301,16 @@ file_name = f"{product_name}.txt"
 text_file = open(file_name, "w+")
 
 # heading
+text_file.write(f"{heading} {date.today()}\n\n")
+
 for item in to_write:
     text_file.write(item)
     text_file.write("\n\n")
 
 # close file
 text_file.close()
+
+print()
 
 # Print Stuff
 for item in to_write:
